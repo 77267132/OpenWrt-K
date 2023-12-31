@@ -363,7 +363,6 @@ jobs:
         run: |
           cp -r files $OPENWRT_ROOT_PATH/files
           chmod 755 $OPENWRT_ROOT_PATH/files/etc/uci-defaults/*
-          chmod 755 $OPENWRT_ROOT_PATH/files/usr/share/cmzj/openwrt-k_tool.sh
           #替换编译者
           if [ "$(curl -s https://api.github.com/users/$(echo ${{ github.repository }} | sed "s/\/.*//g") 2>/dev/null|grep -c "^  \"name\": null,$")" -ne '0' ];then
             compiler=$(echo ${{ github.repository }} | sed "s/\/.*//g")
