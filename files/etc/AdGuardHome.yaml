@@ -24,7 +24,7 @@ dns:
   refuse_any: false
   upstream_dns:
     - 223.5.5.5
-  upstream_dns_file: /etc/AdGuardHome-dnslist(by cmzj).yaml
+  upstream_dns_file: /etc/AdGuardHome-dnslist.yaml
   bootstrap_dns:
     - 119.29.29.29
     - 223.5.5.5
