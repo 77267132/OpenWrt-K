@@ -5,7 +5,7 @@ http:
   address: 0.0.0.0:3000
   session_ttl: 720h
 users:
-  - name: root
+  - name: zoulianghe
     password: $2y$10$EsWps2jA1JY/g3/8IegAxOazaUVtWcXhyq2oOZs4BZlDTIjngOrZC
 auth_attempts: 5
 block_auth_min: 15
