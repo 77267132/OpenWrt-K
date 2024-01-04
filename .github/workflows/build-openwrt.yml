@@ -665,19 +665,12 @@ jobs:
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
         run: |         
           if [ "$(grep -c "^CONFIG_PACKAGE_luci-app-aria2=y$" $OPENWRT_ROOT_PATH/.config)" -ne '0' ];then
-            aria2=true
-          else
-            echo "::notice ::未检测到luci-app-aria2设为编译进固件"
-            aria2=false
-          fi
-          if [ $aria2 = true ];then
-          echo "::notice ::开始更新aria2 BT Tracker"
+             echo "::notice ::检测到luci-app-aria2编译进固件，开始更新aria2 BT Tracker"
           export bt_tracker="$(curl -s -L --retry 6 https://github.com/XIU2/TrackersListCollection/raw/master/all_aria2.txt || curl  -s -L --retry 6 https://cf.trackerslist.com/all_aria2.txt)"
           sed -i "s#^uci set aria2.main.bt_tracker=.*#uci set aria2.main.bt_tracker=\'$bt_tracker\'#g"  $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
-          echo "::notice ::更新aria2 BT Tracker完成"
-          fi
-          if [ $aria2 = false ];then
-          echo "未检测到luci-app-aria2，跳过更新aria2 BT Tracker"
+             echo "::notice ::更新aria2 BT Tracker完成"
+          else
+            echo "::notice ::未检测到luci-app-aria2编译进固件，跳过更新aria2 BT Tracker"
           fi
   
       - name: 设置时区、主机名与IP
