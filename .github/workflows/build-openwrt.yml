@@ -341,15 +341,6 @@ jobs:
           mv $WORKINGDIR/openwrt-smartdns-master/* $WORKINGDIR/
           rmdir $WORKINGDIR/openwrt-smartdns-master
           rm $WORKINGDIR/master.zip
-          LUCIBRANCH="master"
-          WORKINGDIR="$OPENWRT_ROOT_PATH/feeds/luci/applications/luci-app-smartdns"
-          mkdir $WORKINGDIR -p
-          rm $WORKINGDIR/* -fr
-          curl -s -L --retry 6 https://github.com/pymumu/luci-app-smartdns/archive/${LUCIBRANCH}.zip -o $WORKINGDIR/${LUCIBRANCH}.zip
-          unzip $WORKINGDIR/${LUCIBRANCH}.zip -d $WORKINGDIR
-          mv $WORKINGDIR/luci-app-smartdns-${LUCIBRANCH}/* $WORKINGDIR/
-          rmdir $WORKINGDIR/luci-app-smartdns-${LUCIBRANCH}
-          rm $WORKINGDIR/${LUCIBRANCH}.zip
           WORKINGDIR="$OPENWRT_ROOT_PATH/feeds/packages/admin/netdata"
           mkdir $WORKINGDIR -p
           rm $WORKINGDIR/* -fr
