@@ -670,12 +670,6 @@ jobs:
             rm -rf $OPENWRT_ROOT_PATH/files/etc/openclash
           fi
 
-      - name: 更新BT Tracker
-        working-directory: ${{ env.OPENWRT_ROOT_PATH }}
-        run: |
-         export bt_tracker="$(curl  -s -L --retry 6 https://github.com/XIU2/TrackersListCollection/raw/master/all_aria2.txt || curl  -s -L --retry 6 https://cf.trackerslist.com/all_aria2.txt)"
-         sed -i "s#^uci set aria2.main.bt_tracker=.*#uci set aria2.main.bt_tracker=\'$bt_tracker\'#g"  $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
-
       - name: 设置时区、主机名与IP
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
         run: |
