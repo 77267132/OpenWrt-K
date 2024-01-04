@@ -660,7 +660,18 @@ jobs:
             echo "::notice ::未检测到luci-app-openclash配置为编译进固件,退出执行下载openclash内核。"
             rm -rf $OPENWRT_ROOT_PATH/files/etc/openclash
           fi
-
+          
+      - name: 更新BT Tracker
+        working-directory: ${{ env.OPENWRT_ROOT_PATH }}
+        run: |
+          if [ "$(grep -c "^CONFIG_PACKAGE_luci-app-aria2=y$" .config)" -ne '0' ];then
+          echo "开始更新aria2 BT Tracker" 
+          export bt_tracker="$(curl -s -L --retry 6 https://github.com/XIU2/TrackersListCollection/raw/master/all_aria2.txt || curl  -s -L --retry 6 https://cf.trackerslist.com/all_aria2.txt)"
+          sed -i "s#^uci set aria2.main.bt_tracker=.*#uci set aria2.main.bt_tracker=\'$bt_tracker\'#g"  $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
+          echo "更新aria2 BT Tracker完成" 
+          else
+          echo "未检测到aria2，跳过更新aria2 BT Tracker" 
+  
       - name: 设置时区、主机名与IP
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
         run: |
