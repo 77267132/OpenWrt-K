@@ -666,7 +666,7 @@ jobs:
         run: |         
           if [ "$(grep -c "^CONFIG_PACKAGE_luci-app-aria2=y$" $OPENWRT_ROOT_PATH/.config)" -ne '0' ];then
              echo "::notice ::检测到luci-app-aria2编译进固件，开始更新aria2 BT Tracker"
-          export bt_tracker="$(curl -s -L --retry 6 https://github.com/XIU2/TrackersListCollection/raw/master/all_aria2.txt || curl  -s -L --retry 6 https://cf.trackerslist.com/all_aria2.txt)"
+          export bt_tracker="$(curl  -s -L --retry 6 https://github.com/XIU2/TrackersListCollection/raw/master/all_aria2.txt || curl  -s -L --retry 6 https://cf.trackerslist.com/all_aria2.txt)"
           sed -i "s#^uci set aria2.main.bt_tracker=.*#uci set aria2.main.bt_tracker=\'$bt_tracker\'#g"  $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
              echo "::notice ::更新aria2 BT Tracker完成"
           else
