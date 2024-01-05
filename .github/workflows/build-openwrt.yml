@@ -686,7 +686,7 @@ jobs:
           echo "::notice ::设置openwrt默认主机名为$hostname"
           sed -i "s/set system.@system\[-1].timezone='UTC'/set system.@system\[-1].timezone=\'$timezone\'/g" $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
           echo "::notice ::设置openwrt默认时区为$timezone"
-          sed -i "/set system.@system\[-1].timezone='CST-8'/i\		set system.@system\[-1].zonename=\'$zonename\'" $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
+          sed -i "/set system.@system\[-1].timezone='CST-8'/i set system.@system\[-1].zonename=\'$zonename\'" $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
           echo "::notice ::设置openwrt默认时区名称为$zonename"
           sed -i '6s/R20240101/R${{ needs.planning.outputs.starttime }}/' $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
           echo "::notice ::设置openwrt默认版本号为R${{ needs.planning.outputs.starttime }}"
