@@ -240,8 +240,5 @@ if [ "$( opkg list-installed 2>/dev/null| grep -c "^dnsmasq")" -ne '0' ];then
   uci commit dhcp
   /etc/init.d/dnsmasq restart
 fi
-uci commit
-/etc/init.d/sing-box stop
-/etc/init.d/sing-box disable
 exit 0
 
