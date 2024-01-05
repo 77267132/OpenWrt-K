@@ -1,7 +1,7 @@
 #=============================================================================#
 #MIT License
 
-#Copyright (c) 2023 沉默の金
+#Copyright (c) 2023 邹良贺
 
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
 #SOFTWARE.
 #=============================================================================#
 
-name: Build OpenWrt-K
+name: Build OpenWrt
 on:
 #  schedule:
 #    - cron: '0 4 * * *'
@@ -109,7 +109,7 @@ jobs:
           EXT_PKGS_PREP_PATH=$TMPDIR/extpackages_prepare
           EXT_PKGS_DL_PATH=$DOWNLOAD_ROOT_PATH/extpackages/dl
           EXT_PKGS_PATH=$DOWNLOAD_ROOT_PATH/extpackages/extpackages
-          EXT_PKGS_CONFIG=$GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-K/extpackages.config
+          EXT_PKGS_CONFIG=$GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/extpackages.config
           mkdir -p $EXT_PKGS_PREP_PATH $EXT_PKGS_PATH $EXT_PKGS_DL_PATH
           NUMBER_OF_PKGS=$(grep -c "^EXT_PACKAGES_NAME\[" $EXT_PKGS_CONFIG)
           n=1
@@ -310,7 +310,7 @@ jobs:
 
       - name: 切换标签/分支
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
-        run: git checkout $(sed -n '/openwrt_tag\/branch/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-K/compile.config | sed -e 's/.*=//')
+        run: git checkout $(sed -n '/openwrt_tag\/branch/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/compile.config | sed -e 's/.*=//')
 
       - name: 复制cmzj_package
         working-directory: ${{ env.WORKSPACE_ROOT_PATH }}
@@ -355,7 +355,7 @@ jobs:
           cp -r files $OPENWRT_ROOT_PATH/files
           chmod 755 $OPENWRT_ROOT_PATH/files/etc/uci-defaults/*
           #添加编译信息
-          export OPENWRT_TAG_BRANCH="$(sed -n '/openwrt_tag\/branch/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-K/compile.config | sed -e 's/.*=//')"
+          export OPENWRT_TAG_BRANCH="$(sed -n '/openwrt_tag\/branch/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/compile.config | sed -e 's/.*=//')"
           echo "COMPILE_START_TIME=\"${{ needs.planning.outputs.starttime }}\"" >> $OPENWRT_ROOT_PATH/files/etc/openwrt_info
           echo "COMPILER=\"$compiler\"" >> $OPENWRT_ROOT_PATH/files/etc/openwrt_info
           echo "RELEASE_NAME=\"Zoulianghe_V${{ needs.planning.outputs.starttime }} (${{ matrix.target }}-${{ matrix.subtarget }})-[$OPENWRT_TAG_BRANCH]\"" >> $OPENWRT_ROOT_PATH/files/etc/openwrt_info
@@ -403,7 +403,7 @@ jobs:
               echo "::notice ::添加sfe/fullcone所需补丁与附加内核配置(5.10内核)"
               cp $CMZJ_PATCH_ROOT_PATH/hack-$kernel_version/952-net-conntrack-events-support-multiple-registrant.patch  $OPENWRT_ROOT_PATH/target/linux/generic/hack-$kernel_version
             else
-              echo "::error ::OpenWrt-K不支持为5.10以下内核打补丁，如需编译请删除此步骤与turboacc的相关的步骤并删除turboacc及其相关的拓展软件包(luci-app-turboacc、nft-fullcone、shortcut-fe)"
+              echo "::error ::OpenWrt-Z不支持为5.10以下内核打补丁，如需编译请删除此步骤与turboacc的相关的步骤并删除turboacc及其相关的拓展软件包(luci-app-turboacc、nft-fullcone、shortcut-fe)"
               exit 1
             fi
             echo "# CONFIG_NF_CONNTRACK_CHAIN_EVENTS is not set" >> $OPENWRT_ROOT_PATH/target/linux/generic/config-$kernel_version
@@ -444,7 +444,7 @@ jobs:
       - name: 为openwrt-22.03/v22.03.*升级dnsmasq与libubox
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
         run: |
-          openwrt_tag_branch=$(sed -n '/openwrt_tag\/branch/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-K/compile.config | sed -e 's/.*=//')
+          openwrt_tag_branch=$(sed -n '/openwrt_tag\/branch/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/compile.config | sed -e 's/.*=//')
           if [ "$openwrt_tag_branch" = "openwrt-22.03" ] || [[ "$openwrt_tag_branch" =~ ^v22.03.* ]] ; then
             echo "::notice ::检测到openwrt-22.03分支/v22.03.*版本升级dnsmasq与libubox"
             rm -rf $OPENWRT_ROOT_PATH/package/{network/services/dnsmasq,libs/libubox}
@@ -676,9 +676,9 @@ jobs:
       - name: 设置时区、主机名与IP
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
         run: |
-          ipaddr=$(grep "^ipaddr=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-K/openwrtext.config|sed -e "s/ipaddr=//" -e "s/ //g")
-          timezone=$(grep "^timezone=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-K/openwrtext.config|sed -e "s/timezone=//" -e "s/ //g")
-          zonename=$(grep "^zonename=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-K/openwrtext.config|sed -e "s/zonename=//" -e "s/ //g")
+          ipaddr=$(grep "^ipaddr=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/ipaddr=//" -e "s/ //g")
+          timezone=$(grep "^timezone=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/timezone=//" -e "s/ //g")
+          zonename=$(grep "^zonename=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/zonename=//" -e "s/ //g")
           echo "::notice ::设置openwrt默认ip为$ipaddr,时区为$timezone,时区区域名称为$zonename"
           sed -i -e "s/set system.@system\[-1].hostname='OpenWrt'/set system.@system\[-1].hostname='Zoulianghe'/g" -e "s/set system.@system\[-1].timezone='UTC'/set system.@system\[-1].timezone=\'$timezone\'/g" -e "/set system.@system\[-1].timezone='CST-8'/i\		set system.@system\[-1].zonename=\'$zonename\'" $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
           sed -i "s#^uci set network.lan.ipaddr=.*#uci set network.lan.ipaddr=\"$ipaddr\"#g"  $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
@@ -915,9 +915,9 @@ jobs:
       - name: 加载自定义配置并生成配置文件
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
         run: |
-          if [ -n "$(sed -n '/^kmod_compile_exclude_list=/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-K/compile.config | sed -e "s/=[my]\([,]\{0,1\}\)/\1/g" -e 's/.*=//')" ];then
-            kmod_compile_exclude_list=$(sed -n '/^kmod_compile_exclude_list=/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-K/compile.config | sed -e "s/=[my]\([,]\{0,1\}\)/\1/g" -e 's/.*=//' -e 's/,$//g' -e 's#^#\\(#' -e "s#,#\\\|#g" -e "s/$/\\\)/g" )
-            echo "::notice ::kmod编译排除列表：$(sed -n '/^kmod_compile_exclude_list=/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-K/compile.config | sed -e "s/=[my]\([,]\{0,1\}\)/\1/g" -e 's/.*=//')"
+          if [ -n "$(sed -n '/^kmod_compile_exclude_list=/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/compile.config | sed -e "s/=[my]\([,]\{0,1\}\)/\1/g" -e 's/.*=//')" ];then
+            kmod_compile_exclude_list=$(sed -n '/^kmod_compile_exclude_list=/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/compile.config | sed -e "s/=[my]\([,]\{0,1\}\)/\1/g" -e 's/.*=//' -e 's/,$//g' -e 's#^#\\(#' -e "s#,#\\\|#g" -e "s/$/\\\)/g" )
+            echo "::notice ::kmod编译排除列表：$(sed -n '/^kmod_compile_exclude_list=/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/compile.config | sed -e "s/=[my]\([,]\{0,1\}\)/\1/g" -e 's/.*=//')"
           else
             echo "::warning ::kmod编译排除列表无法获取或为空，这很有可能导致编译失败。"
           fi
@@ -1224,7 +1224,7 @@ jobs:
       - name: 生成 release 所需变量
         working-directory: ${{ env.UPLOAD_ROOT_PATH }}
         run: |
-          export OPENWRT_TAG_BRANCH="$(sed -n '/openwrt_tag\/branch/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-K/compile.config | sed -e 's/.*=//')"
+          export OPENWRT_TAG_BRANCH="$(sed -n '/openwrt_tag\/branch/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/compile.config | sed -e 's/.*=//')"
           echo "OPENWRT_TAG_BRANCH=$OPENWRT_TAG_BRANCH" >> $GITHUB_ENV
           export RELEASE_NAME="Zoulianghe_V${{ needs.planning.outputs.starttime }} (${{ matrix.target }}-${{ matrix.subtarget }})-[$OPENWRT_TAG_BRANCH]"
           echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
