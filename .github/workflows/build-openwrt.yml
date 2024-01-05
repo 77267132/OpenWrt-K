@@ -680,6 +680,7 @@ jobs:
           timezone=$(grep "^timezone=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/timezone=//" -e "s/ //g")
           zonename=$(grep "^zonename=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/zonename=//" -e "s/ //g")
           hostname=$(grep "^hostname=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/hostname=//" -e "s/ //g")
+          compiler=$(grep "^compiler=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/compiler=//" -e "s/ //g")
           sed -i "s#^uci set network.lan.ipaddr=.*#uci set network.lan.ipaddr=\"$ipaddr\"#g"  $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
           echo "::notice ::设置openwrt默认ip为$ipaddr"
           sed -i "s/set system.@system\[-1].hostname='OpenWrt'/set system.@system\[-1].hostname=\'$hostname\'/g" $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
@@ -689,7 +690,11 @@ jobs:
           sed -i "/set system.@system\[-1].timezone='CST-8'/i set system.@system\[-1].zonename=\'$zonename\'" $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
           echo "::notice ::设置openwrt默认时区名称为$zonename"
           sed -i '6s/R20240101/R${{ needs.planning.outputs.starttime }}/' $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
-          echo "::notice ::设置openwrt默认版本号为R${{ needs.planning.outputs.starttime }}"
+          echo "::notice ::设置openwrt发布号为R${{ needs.planning.outputs.starttime }}"
+          sed -i '8s/OpenWrt R20240101 Compiled by Zoulianghe/OpenWrt R${{ needs.planning.outputs.starttime }} Compiled by $compiler/' $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
+          echo "::notice ::设置openwrt固件版本为OpenWrt R${{ needs.planning.outputs.starttime }}"
+          echo "::notice ::设置openwrt编译者为$compiler"
+          
       - name: 检查剩余空间
         run: |
           echo "======================="
