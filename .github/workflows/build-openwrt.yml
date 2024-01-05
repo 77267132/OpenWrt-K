@@ -679,9 +679,13 @@ jobs:
           ipaddr=$(grep "^ipaddr=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/ipaddr=//" -e "s/ //g")
           timezone=$(grep "^timezone=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/timezone=//" -e "s/ //g")
           zonename=$(grep "^zonename=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/zonename=//" -e "s/ //g")
-          echo "::notice ::设置openwrt默认ip为$ipaddr,时区为$timezone,时区区域名称为$zonename"
-          sed -i -e "s/set system.@system\[-1].hostname='OpenWrt'/set system.@system\[-1].hostname='Zoulianghe'/g" -e "s/set system.@system\[-1].timezone='UTC'/set system.@system\[-1].timezone=\'$timezone\'/g" -e "/set system.@system\[-1].timezone='CST-8'/i\		set system.@system\[-1].zonename=\'$zonename\'" $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
+          hostname=$(grep "^hostname=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/hostname=//" -e "s/ //g")
           sed -i "s#^uci set network.lan.ipaddr=.*#uci set network.lan.ipaddr=\"$ipaddr\"#g"  $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
+          sed -i "s/set system.@system\[-1].hostname='OpenWrt'/set system.@system\[-1].hostname=\'$hostname\'/g" $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
+          sed -i "s/set system.@system\[-1].timezone='UTC'/set system.@system\[-1].timezone=\'$timezone\'/g" $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
+          sed -i "/set system.@system\[-1].timezone='CST-8'/i\		set system.@system\[-1].zonename=\'$zonename\'" $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
+          $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
+          echo "::notice ::设置openwrt默认ip为$ipaddr,时区为$timezone,时区区域名称为$zonename,主机名为$hostname"
           sed -i '6s/R20240101/R${{ needs.planning.outputs.starttime }}/' $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
           
       - name: 检查剩余空间
