@@ -682,8 +682,8 @@ jobs:
           echo "::notice ::设置openwrt默认ip为$ipaddr,时区为$timezone,时区区域名称为$zonename"
           sed -i -e "s/set system.@system\[-1].hostname='OpenWrt'/set system.@system\[-1].hostname='Zoulianghe'/g" -e "s/set system.@system\[-1].timezone='UTC'/set system.@system\[-1].timezone=\'$timezone\'/g" -e "/set system.@system\[-1].timezone='CST-8'/i\		set system.@system\[-1].zonename=\'$zonename\'" $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
           sed -i "s#^uci set network.lan.ipaddr=.*#uci set network.lan.ipaddr=\"$ipaddr\"#g"  $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
-          sed -i '/DISTRIB_RELEASE/d' $OPENWRT_ROOT_PATH/files/etc/openwrt_release
-          echo "DISTRIB_REVISION=\'R${{ needs.planning.outputs.starttime }}\'" >> $OPENWRT_ROOT_PATH/files/etc/openwrt_release
+          sed -i "s#^sed -i "/^DISTRIB_DESCRIPTION=.*#sed -i "/^DISTRIB_REVISION='R${{ needs.planning.outputs.starttime }}\'/" /etc/openwrt_release#g"  $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
+    
           
       - name: 检查剩余空间
         run: |
