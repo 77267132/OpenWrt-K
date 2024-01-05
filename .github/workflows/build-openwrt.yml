@@ -85,16 +85,16 @@ jobs:
 
       - name: 建立工作文件夹
         run: |
-          mkdir -p download cmzj_package cmzj_patch
+          mkdir -p download zlh_package zlh_patch
           export DOWNLOAD_ROOT_PATH="$(pwd)/download"
-          export CMZJ_PACKAGE_ROOT_PATH="$(pwd)/cmzj_package"
-          export CMZJ_PATCH_ROOT_PATH="$(pwd)/cmzj_patch"
+          export ZLH_PACKAGE_ROOT_PATH="$(pwd)/zlh_package"
+          export ZLH_PATCH_ROOT_PATH="$(pwd)/zlh_patch"
           echo "DOWNLOAD_ROOT_PATH=$DOWNLOAD_ROOT_PATH" >> $GITHUB_ENV
-          echo "CMZJ_PACKAGE_ROOT_PATH=$CMZJ_PACKAGE_ROOT_PATH" >> $GITHUB_ENV
-          echo "CMZJ_PATCH_ROOT_PATH=$CMZJ_PATCH_ROOT_PATH" >> $GITHUB_ENV
-          mkdir -p $CMZJ_PATCH_ROOT_PATH/{firewall4,libnftnl,nftables}/patches/
-          mkdir -p $CMZJ_PATCH_ROOT_PATH/{dnsmasq,libubox,netdata}
-          mkdir -p $CMZJ_PATCH_ROOT_PATH/{hack,pending}-{5.10,5.15,6.1}
+          echo "ZLH_PACKAGE_ROOT_PATH=$ZLH_PACKAGE_ROOT_PATH" >> $GITHUB_ENV
+          echo "ZLH_PATCH_ROOT_PATH=$ZLH_PATCH_ROOT_PATH" >> $GITHUB_ENV
+          mkdir -p $ZLH_PATCH_ROOT_PATH/{firewall4,libnftnl,nftables}/patches/
+          mkdir -p $ZLH_PATCH_ROOT_PATH/{dnsmasq,libubox,netdata}
+          mkdir -p $ZLH_PATCH_ROOT_PATH/{hack,pending}-{5.10,5.15,6.1}
 
       - name: 克隆补丁所需源代码
         run: |
@@ -160,18 +160,18 @@ jobs:
               cp -RT $EXT_PKGS_DL_PATH/$EXT_PKG_BRANCH/$EXT_PKG_REPO_PATH/$EXT_PKG_PATH $EXT_PKGS_PATH/$EXT_PKG_NAME
               n=$(( n+1 ))
           done
-          cp -RT $EXT_PKGS_PATH $CMZJ_PACKAGE_ROOT_PATH
+          cp -RT $EXT_PKGS_PATH $ZLH_PACKAGE_ROOT_PATH
           [[ -d $TMPDIR ]] && rm -rf "$TMPDIR"
-          cd $CMZJ_PACKAGE_ROOT_PATH
-          echo "CMZJ_PACKAGE_ROOT_PATH"
-          ls -la $(find $CMZJ_PACKAGE_ROOT_PATH -type d)
+          cd $ZLH_PACKAGE_ROOT_PATH
+          echo "ZLH_PACKAGE_ROOT_PATH"
+          ls -la $(find $ZLH_PACKAGE_ROOT_PATH -type d)
 
       - name: 修改Makefile文件
-        working-directory:  ${{ env.CMZJ_PACKAGE_ROOT_PATH }}
+        working-directory:  ${{ env.ZLH_PACKAGE_ROOT_PATH }}
         run: sed -i 's/include ..\/..\/luci.mk/include $(TOPDIR)\/feeds\/luci\/luci.mk/' $(find ./ -type f -name "Makefile")
 
       - name: 创建符号链接以修复中文支持
-        working-directory:  ${{ env.CMZJ_PACKAGE_ROOT_PATH }}
+        working-directory:  ${{ env.ZLH_PACKAGE_ROOT_PATH }}
         run: |
           TMPDIR=$(mktemp -d) || exit 1
           find . -name 'po' -type d > $TMPDIR/podir.list
@@ -197,45 +197,45 @@ jobs:
           done
           [[ -d $TMPDIR ]] && rm -rf "$TMPDIR"
 
-      - name: 复制到cmzj_patch
+      - name: 复制到zlh_patch
         run: |
-          cp $DOWNLOAD_ROOT_PATH/patch/lede/target/linux/generic/hack-5.10/952-net-conntrack-events-support-multiple-registrant.patch $CMZJ_PATCH_ROOT_PATH/hack-5.10/
-          cp $DOWNLOAD_ROOT_PATH/patch/lede/target/linux/generic/hack-5.10/953-net-patch-linux-kernel-to-support-shortcut-fe.patch $CMZJ_PATCH_ROOT_PATH/hack-5.10/
-          cp $DOWNLOAD_ROOT_PATH/patch/turboacc/hack-5.15/952-add-net-conntrack-events-support-multiple-registrant.patch $CMZJ_PATCH_ROOT_PATH/hack-5.15/
-          cp $DOWNLOAD_ROOT_PATH/patch/lede/target/linux/generic/hack-5.15/953-net-patch-linux-kernel-to-support-shortcut-fe.patch $CMZJ_PATCH_ROOT_PATH/hack-5.15/
-          cp $DOWNLOAD_ROOT_PATH/patch/turboacc/hack-6.1/952-add-net-conntrack-events-support-multiple-registrant.patch $CMZJ_PATCH_ROOT_PATH/hack-6.1/
-          cp $DOWNLOAD_ROOT_PATH/patch/lede/target/linux/generic/hack-6.1/953-net-patch-linux-kernel-to-support-shortcut-fe.patch $CMZJ_PATCH_ROOT_PATH/hack-6.1/
-          cp -RT $DOWNLOAD_ROOT_PATH/patch/turboacc/firewall4-$(grep -o 'FIREWALL4_VERSION=.*' $DOWNLOAD_ROOT_PATH/patch/turboacc/version | cut -d '=' -f 2)/firewall4 $CMZJ_PATCH_ROOT_PATH/firewall4
-          cp -RT $DOWNLOAD_ROOT_PATH/patch/turboacc/libnftnl-$(grep -o 'LIBNFTNL_VERSION=.*' $DOWNLOAD_ROOT_PATH/patch/turboacc/version | cut -d '=' -f 2)/libnftnl $CMZJ_PATCH_ROOT_PATH/libnftnl
-          cp -RT $DOWNLOAD_ROOT_PATH/patch/turboacc/nftables-$(grep -o 'NFTABLES_VERSION=.*' $DOWNLOAD_ROOT_PATH/patch/turboacc/version | cut -d '=' -f 2)/nftables $CMZJ_PATCH_ROOT_PATH/nftables
-          cp -RT $DOWNLOAD_ROOT_PATH/openwrt/package/network/services/dnsmasq $CMZJ_PATCH_ROOT_PATH/dnsmasq
-          cp -RT $DOWNLOAD_ROOT_PATH/openwrt/package/libs/libubox $CMZJ_PATCH_ROOT_PATH/libubox
-          cp $DOWNLOAD_ROOT_PATH/patch/lede/target/linux/generic/pending-5.10/613-netfilter_optional_tcp_window_check.patch $CMZJ_PATCH_ROOT_PATH/pending-5.10/
-          cp $DOWNLOAD_ROOT_PATH/patch/lede/target/linux/generic/pending-5.15/613-netfilter_optional_tcp_window_check.patch $CMZJ_PATCH_ROOT_PATH/pending-5.15/
-          cp $DOWNLOAD_ROOT_PATH/patch/lede/target/linux/generic/pending-6.1/613-netfilter_optional_tcp_window_check.patch $CMZJ_PATCH_ROOT_PATH/pending-6.1/
-          cp -RT $DOWNLOAD_ROOT_PATH/patch/immortalwrt-packages/admin/netdata $CMZJ_PATCH_ROOT_PATH/netdata
+          cp $DOWNLOAD_ROOT_PATH/patch/lede/target/linux/generic/hack-5.10/952-net-conntrack-events-support-multiple-registrant.patch $ZLH_PATCH_ROOT_PATH/hack-5.10/
+          cp $DOWNLOAD_ROOT_PATH/patch/lede/target/linux/generic/hack-5.10/953-net-patch-linux-kernel-to-support-shortcut-fe.patch $ZLH_PATCH_ROOT_PATH/hack-5.10/
+          cp $DOWNLOAD_ROOT_PATH/patch/turboacc/hack-5.15/952-add-net-conntrack-events-support-multiple-registrant.patch $ZLH_PATCH_ROOT_PATH/hack-5.15/
+          cp $DOWNLOAD_ROOT_PATH/patch/lede/target/linux/generic/hack-5.15/953-net-patch-linux-kernel-to-support-shortcut-fe.patch $ZLH_PATCH_ROOT_PATH/hack-5.15/
+          cp $DOWNLOAD_ROOT_PATH/patch/turboacc/hack-6.1/952-add-net-conntrack-events-support-multiple-registrant.patch $ZLH_PATCH_ROOT_PATH/hack-6.1/
+          cp $DOWNLOAD_ROOT_PATH/patch/lede/target/linux/generic/hack-6.1/953-net-patch-linux-kernel-to-support-shortcut-fe.patch $ZLH_PATCH_ROOT_PATH/hack-6.1/
+          cp -RT $DOWNLOAD_ROOT_PATH/patch/turboacc/firewall4-$(grep -o 'FIREWALL4_VERSION=.*' $DOWNLOAD_ROOT_PATH/patch/turboacc/version | cut -d '=' -f 2)/firewall4 $ZLH_PATCH_ROOT_PATH/firewall4
+          cp -RT $DOWNLOAD_ROOT_PATH/patch/turboacc/libnftnl-$(grep -o 'LIBNFTNL_VERSION=.*' $DOWNLOAD_ROOT_PATH/patch/turboacc/version | cut -d '=' -f 2)/libnftnl $ZLH_PATCH_ROOT_PATH/libnftnl
+          cp -RT $DOWNLOAD_ROOT_PATH/patch/turboacc/nftables-$(grep -o 'NFTABLES_VERSION=.*' $DOWNLOAD_ROOT_PATH/patch/turboacc/version | cut -d '=' -f 2)/nftables $ZLH_PATCH_ROOT_PATH/nftables
+          cp -RT $DOWNLOAD_ROOT_PATH/openwrt/package/network/services/dnsmasq $ZLH_PATCH_ROOT_PATH/dnsmasq
+          cp -RT $DOWNLOAD_ROOT_PATH/openwrt/package/libs/libubox $ZLH_PATCH_ROOT_PATH/libubox
+          cp $DOWNLOAD_ROOT_PATH/patch/lede/target/linux/generic/pending-5.10/613-netfilter_optional_tcp_window_check.patch $ZLH_PATCH_ROOT_PATH/pending-5.10/
+          cp $DOWNLOAD_ROOT_PATH/patch/lede/target/linux/generic/pending-5.15/613-netfilter_optional_tcp_window_check.patch $ZLH_PATCH_ROOT_PATH/pending-5.15/
+          cp $DOWNLOAD_ROOT_PATH/patch/lede/target/linux/generic/pending-6.1/613-netfilter_optional_tcp_window_check.patch $ZLH_PATCH_ROOT_PATH/pending-6.1/
+          cp -RT $DOWNLOAD_ROOT_PATH/patch/immortalwrt-packages/admin/netdata $ZLH_PATCH_ROOT_PATH/netdata
           echo "FIREWALL4_VERSION=firewall4-$(grep -o 'FIREWALL4_VERSION=.*' $DOWNLOAD_ROOT_PATH/patch/turboacc/version | cut -d '=' -f 2)"
           echo "NFTABLES_VERSION=libnftnl-$(grep -o 'NFTABLES_VERSION=.*' $DOWNLOAD_ROOT_PATH/patch/turboacc/version | cut -d '=' -f 2)"
           echo "LIBNFTNL_VERSION=nftables-$(grep -o 'LIBNFTNL_VERSION=.*' $DOWNLOAD_ROOT_PATH/patch/turboacc/version | cut -d '=' -f 2)"
 
       - name: 压缩
         run: |
-          cd $CMZJ_PACKAGE_ROOT_PATH
-          tar cvpzf $GITHUB_WORKSPACE/cmzj_package.tgz *
-          cd $CMZJ_PATCH_ROOT_PATH
-          tar cvpzf $GITHUB_WORKSPACE/cmzj_patch.tgz *
+          cd $ZLH_PACKAGE_ROOT_PATH
+          tar cvpzf $GITHUB_WORKSPACE/zlh_package.tgz *
+          cd $ZLH_PATCH_ROOT_PATH
+          tar cvpzf $GITHUB_WORKSPACE/zlh_patch.tgz *
 
-      - name: 上传 cmzj_package
+      - name: 上传 zlh_package
         uses: actions/upload-artifact@v3
         with:
-          name: cmzj_package-${{ matrix.config }}
-          path: cmzj_package.tgz
+          name: zlh_package-${{ matrix.config }}
+          path: zlh_package.tgz
 
-      - name: 上传 cmzj_patch
+      - name: 上传 zlh_patch
         uses: actions/upload-artifact@v3
         with:
-          name: cmzj_patch-${{ matrix.config }}
-          path: cmzj_patch.tgz
+          name: zlh_patch-${{ matrix.config }}
+          path: zlh_patch.tgz
 
   build1:
     runs-on: ubuntu-22.04
@@ -267,37 +267,37 @@ jobs:
           mkdir -p workspace
           export WORKSPACE_ROOT_PATH="$(pwd)/workspace"
           echo "WORKSPACE_ROOT_PATH=$WORKSPACE_ROOT_PATH" >> $GITHUB_ENV
-          mkdir -p $WORKSPACE_ROOT_PATH/{cmzj_package,cmzj_patch,log}
-          export CMZJ_PACKAGE_ROOT_PATH="$WORKSPACE_ROOT_PATH/cmzj_package"
-          export CMZJ_PATCH_ROOT_PATH="$WORKSPACE_ROOT_PATH/cmzj_patch"
+          mkdir -p $WORKSPACE_ROOT_PATH/{zlh_package,zlh_patch,log}
+          export ZLH_PACKAGE_ROOT_PATH="$WORKSPACE_ROOT_PATH/zlh_package"
+          export ZLH_PATCH_ROOT_PATH="$WORKSPACE_ROOT_PATH/zlh_patch"
           export LOG_PATH="$WORKSPACE_ROOT_PATH/log"
-          echo "CMZJ_PACKAGE_ROOT_PATH=$CMZJ_PACKAGE_ROOT_PATH" >> $GITHUB_ENV
-          echo "CMZJ_PATCH_ROOT_PATH=$CMZJ_PATCH_ROOT_PATH" >> $GITHUB_ENV
+          echo "ZLH_PACKAGE_ROOT_PATH=$ZLH_PACKAGE_ROOT_PATH" >> $GITHUB_ENV
+          echo "ZLH_PATCH_ROOT_PATH=$ZLH_PATCH_ROOT_PATH" >> $GITHUB_ENV
           echo "LOG_PATH=$LOG_PATH" >> $GITHUB_ENV
           cat $GITHUB_ENV >> $GITHUB_WORKSPACE/build1_ENV
 
-      - name: 下载cmzj_package
+      - name: 下载zlh_package
         uses: actions/download-artifact@v3
         with:
-          name: cmzj_package-${{ matrix.config }}
+          name: zlh_package-${{ matrix.config }}
 
-      - name: 下载cmzj_patch
+      - name: 下载zlh_patch
         uses: actions/download-artifact@v3
         with:
-          name: cmzj_patch-${{ matrix.config }}
+          name: zlh_patch-${{ matrix.config }}
 
       - name: 解压
         run: |
-          tar xvpfz $GITHUB_WORKSPACE/cmzj_package.tgz -C $CMZJ_PACKAGE_ROOT_PATH
-          tar xvpfz $GITHUB_WORKSPACE/cmzj_patch.tgz -C $CMZJ_PATCH_ROOT_PATH
-          echo "cmzj_package" >> $LOG_PATH/cmzj_package.log
-          ls $CMZJ_PACKAGE_ROOT_PATH >> $LOG_PATH/cmzj_package.log
-          echo "cmzj_patch"  >> $LOG_PATH/cmzj_patch.log
-          ls $CMZJ_PATCH_ROOT_PATH  >> $LOG_PATH/cmzj_patch.log
-          echo "cmzj_package-permissions" >> $LOG_PATH/cmzj_package.log
-          ls -l $CMZJ_PACKAGE_ROOT_PATH/** >> $LOG_PATH/cmzj_package.log
-          echo "cmzj_patch-permissions" >> $LOG_PATH/cmzj_patch.log
-          ls -l $CMZJ_PATCH_ROOT_PATH/**  >> $LOG_PATH/cmzj_patch.log
+          tar xvpfz $GITHUB_WORKSPACE/zlh_package.tgz -C $ZLH_PACKAGE_ROOT_PATH
+          tar xvpfz $GITHUB_WORKSPACE/zlh_patch.tgz -C $ZLH_PATCH_ROOT_PATH
+          echo "zlh_package" >> $LOG_PATH/zlh_package.log
+          ls $ZLH_PACKAGE_ROOT_PATH >> $LOG_PATH/zlh_package.log
+          echo "zlh_patch"  >> $LOG_PATH/zlh_patch.log
+          ls $ZLH_PATCH_ROOT_PATH  >> $LOG_PATH/zlh_patch.log
+          echo "zlh_package-permissions" >> $LOG_PATH/zlh_package.log
+          ls -l $ZLH_PACKAGE_ROOT_PATH/** >> $LOG_PATH/zlh_package.log
+          echo "zlh_patch-permissions" >> $LOG_PATH/zlh_patch.log
+          ls -l $ZLH_PATCH_ROOT_PATH/**  >> $LOG_PATH/zlh_patch.log
 
       - name: 克隆源代码
         working-directory:  ${{ env.WORKSPACE_ROOT_PATH }}
@@ -312,12 +312,12 @@ jobs:
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
         run: git checkout $(sed -n '/openwrt_tag\/branch/p' $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/compile.config | sed -e 's/.*=//')
 
-      - name: 复制cmzj_package
+      - name: 复制zlh_package
         working-directory: ${{ env.WORKSPACE_ROOT_PATH }}
         run: |
-          cp -r $CMZJ_PACKAGE_ROOT_PATH $OPENWRT_ROOT_PATH/package/cmzj_package
-          echo "cmzj_package" >> $LOG_PATH/cmzj_patch.log
-          ls $OPENWRT_ROOT_PATH/package/cmzj_package >> $LOG_PATH/cmzj_patch.log
+          cp -r $ZLH_PACKAGE_ROOT_PATH $OPENWRT_ROOT_PATH/package/zlh_package
+          echo "zlh_package" >> $LOG_PATH/zlh_patch.log
+          ls $OPENWRT_ROOT_PATH/package/zlh_package >> $LOG_PATH/zlh_patch.log
 
       - name: 更新 feeds
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
@@ -344,7 +344,7 @@ jobs:
           WORKINGDIR="$OPENWRT_ROOT_PATH/feeds/packages/admin/netdata"
           mkdir $WORKINGDIR -p
           rm $WORKINGDIR/* -fr
-          cp -RT $CMZJ_PATCH_ROOT_PATH/netdata $WORKINGDIR
+          cp -RT $ZLH_PATCH_ROOT_PATH/netdata $WORKINGDIR
 
       - name: 安装 feeds
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
@@ -391,25 +391,25 @@ jobs:
           fi
           if [ $sfe = true ];then
             echo "::notice ::检测到sfe设为编译进固件，添加sfe所需补丁与附加内核配置"
-            cp -f $CMZJ_PATCH_ROOT_PATH/hack-$kernel_version/953-net-patch-linux-kernel-to-support-shortcut-fe.patch $OPENWRT_ROOT_PATH/target/linux/generic/hack-$kernel_version/
-            cp -f $CMZJ_PATCH_ROOT_PATH/pending-$kernel_version/613-netfilter_optional_tcp_window_check.patch $OPENWRT_ROOT_PATH/target/linux/generic/pending-$kernel_version/
+            cp -f $ZLH_PATCH_ROOT_PATH/hack-$kernel_version/953-net-patch-linux-kernel-to-support-shortcut-fe.patch $OPENWRT_ROOT_PATH/target/linux/generic/hack-$kernel_version/
+            cp -f $ZLH_PATCH_ROOT_PATH/pending-$kernel_version/613-netfilter_optional_tcp_window_check.patch $OPENWRT_ROOT_PATH/target/linux/generic/pending-$kernel_version/
             echo "# CONFIG_SHORTCUT_FE is not set" >> $OPENWRT_ROOT_PATH/target/linux/generic/config-$kernel_version
           fi
           if [ $sfe = true ] || [ "$(grep -c "^CONFIG_PACKAGE_kmod-nft-fullcone=y$" $OPENWRT_ROOT_PATH/.config)" -ne '0' ] || [ "$(grep -c "^CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_NFT_FULLCONE=y$" $OPENWRT_ROOT_PATH/.config)" -ne '0' ];then
             if  [ "$kernel_version" = "6.1" ] || [ "$kernel_version" = "5.15" ]; then
               echo "::notice ::添加sfe/fullcone所需补丁与附加内核配置"
-              cp $CMZJ_PATCH_ROOT_PATH/hack-$kernel_version/952-add-net-conntrack-events-support-multiple-registrant.patch $OPENWRT_ROOT_PATH/target/linux/generic/hack-$kernel_version
+              cp $ZLH_PATCH_ROOT_PATH/hack-$kernel_version/952-add-net-conntrack-events-support-multiple-registrant.patch $OPENWRT_ROOT_PATH/target/linux/generic/hack-$kernel_version
             elif [ "$kernel_version" = "5.10" ] ; then
               echo "::notice ::添加sfe/fullcone所需补丁与附加内核配置(5.10内核)"
-              cp $CMZJ_PATCH_ROOT_PATH/hack-$kernel_version/952-net-conntrack-events-support-multiple-registrant.patch  $OPENWRT_ROOT_PATH/target/linux/generic/hack-$kernel_version
+              cp $ZLH_PATCH_ROOT_PATH/hack-$kernel_version/952-net-conntrack-events-support-multiple-registrant.patch  $OPENWRT_ROOT_PATH/target/linux/generic/hack-$kernel_version
             else
               echo "::error ::OpenWrt-Z不支持为5.10以下内核打补丁，如需编译请删除此步骤与turboacc的相关的步骤并删除turboacc及其相关的拓展软件包(luci-app-turboacc、nft-fullcone、shortcut-fe)"
               exit 1
             fi
             echo "# CONFIG_NF_CONNTRACK_CHAIN_EVENTS is not set" >> $OPENWRT_ROOT_PATH/target/linux/generic/config-$kernel_version
           fi
-          echo "hack-$kernel_version"  >> $LOG_PATH/cmzj_patch.log
-          ls $OPENWRT_ROOT_PATH/target/linux/generic/hack-$kernel_version >> $LOG_PATH/cmzj_patch.log
+          echo "hack-$kernel_version"  >> $LOG_PATH/zlh_patch.log
+          ls $OPENWRT_ROOT_PATH/target/linux/generic/hack-$kernel_version >> $LOG_PATH/zlh_patch.log
 
       - name: 添加turboacc fullcone所需的libnftnl、firewall4、nftables补丁
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
@@ -420,23 +420,23 @@ jobs:
             echo "::notice ::检测到nft-fullcone设为编译进固件,添加fullcone所需libnftnl、firewall4、nftables补丁"
             rm -rf $OPENWRT_ROOT_PATH/package/{libs/libnftnl,network/config/firewall4,network/utils/nftables}
             mkdir -p $OPENWRT_ROOT_PATH/package/{libs/libnftnl,network/config/firewall4,network/utils/nftables}
-            cp -RT $CMZJ_PATCH_ROOT_PATH/firewall4 $OPENWRT_ROOT_PATH/package/network/config/firewall4
-            cp -RT $CMZJ_PATCH_ROOT_PATH/libnftnl $OPENWRT_ROOT_PATH/package/libs/libnftnl
-            cp -RT $CMZJ_PATCH_ROOT_PATH/nftables $OPENWRT_ROOT_PATH/package/network/utils/nftables
-            echo "cmzj_patch" >> $LOG_PATH/cmzj_patch.log
-            ls $CMZJ_PATCH_ROOT_PATH >> $LOG_PATH/cmzj_patch.log
-            echo "libnftnl-file" >> $LOG_PATH/cmzj_patch.log
-            ls $OPENWRT_ROOT_PATH/package/libs/libnftnl >> $LOG_PATH/cmzj_patch.log
-            echo "firewall4-file" >> $LOG_PATH/cmzj_patch.log
-            ls $OPENWRT_ROOT_PATH/package/network/config/firewall4 >> $LOG_PATH/cmzj_patch.log
-            echo "nftables-file" >> $LOG_PATH/cmzj_patch.log
-            ls $OPENWRT_ROOT_PATH/package/network/utils/nftables >> $LOG_PATH/cmzj_patch.log
-            echo "firewall4-patches" >> $LOG_PATH/cmzj_patch.log
-            ls $OPENWRT_ROOT_PATH/package/network/config/firewall4/patches/ >> $LOG_PATH/cmzj_patch.log
-            echo "libnftnl-patches" >> $LOG_PATH/cmzj_patch.log
-            ls $OPENWRT_ROOT_PATH/package/libs/libnftnl/patches/ >> $LOG_PATH/cmzj_patch.log
-            echo "nftables-patches" >> $LOG_PATH/cmzj_patch.log
-            ls $OPENWRT_ROOT_PATH/package/network/utils/nftables/patches/ >> $LOG_PATH/cmzj_patch.log
+            cp -RT $ZLH_PATCH_ROOT_PATH/firewall4 $OPENWRT_ROOT_PATH/package/network/config/firewall4
+            cp -RT $ZLH_PATCH_ROOT_PATH/libnftnl $OPENWRT_ROOT_PATH/package/libs/libnftnl
+            cp -RT $ZLH_PATCH_ROOT_PATH/nftables $OPENWRT_ROOT_PATH/package/network/utils/nftables
+            echo "zlh_patch" >> $LOG_PATH/zlh_patch.log
+            ls $ZLH_PATCH_ROOT_PATH >> $LOG_PATH/zlh_patch.log
+            echo "libnftnl-file" >> $LOG_PATH/zlh_patch.log
+            ls $OPENWRT_ROOT_PATH/package/libs/libnftnl >> $LOG_PATH/zlh_patch.log
+            echo "firewall4-file" >> $LOG_PATH/zlh_patch.log
+            ls $OPENWRT_ROOT_PATH/package/network/config/firewall4 >> $LOG_PATH/zlh_patch.log
+            echo "nftables-file" >> $LOG_PATH/zlh_patch.log
+            ls $OPENWRT_ROOT_PATH/package/network/utils/nftables >> $LOG_PATH/zlh_patch.log
+            echo "firewall4-patches" >> $LOG_PATH/zlh_patch.log
+            ls $OPENWRT_ROOT_PATH/package/network/config/firewall4/patches/ >> $LOG_PATH/zlh_patch.log
+            echo "libnftnl-patches" >> $LOG_PATH/zlh_patch.log
+            ls $OPENWRT_ROOT_PATH/package/libs/libnftnl/patches/ >> $LOG_PATH/zlh_patch.log
+            echo "nftables-patches" >> $LOG_PATH/zlh_patch.log
+            ls $OPENWRT_ROOT_PATH/package/network/utils/nftables/patches/ >> $LOG_PATH/zlh_patch.log
           else
             echo "::notice ::未检测到nft-fullcone设为编译进固件,跳过添加。"
           fi
@@ -449,8 +449,8 @@ jobs:
             echo "::notice ::检测到openwrt-22.03分支/v22.03.*版本升级dnsmasq与libubox"
             rm -rf $OPENWRT_ROOT_PATH/package/{network/services/dnsmasq,libs/libubox}
             mkdir -p $OPENWRT_ROOT_PATH/package/{network/services/dnsmasq,libs/libubox}
-            cp -RT $CMZJ_PATCH_ROOT_PATH/libubox $OPENWRT_ROOT_PATH/package/libs/libubox
-            cp -RT $CMZJ_PATCH_ROOT_PATH/dnsmasq $OPENWRT_ROOT_PATH/package/network/services/dnsmasq
+            cp -RT $ZLH_PATCH_ROOT_PATH/libubox $OPENWRT_ROOT_PATH/package/libs/libubox
+            cp -RT $ZLH_PATCH_ROOT_PATH/dnsmasq $OPENWRT_ROOT_PATH/package/network/services/dnsmasq
           else
             echo "::notice ::检测到非openwrt-22.03分支/v22.03.*版本,跳过升级dnsmasq与libubox。"
           fi
@@ -843,8 +843,8 @@ jobs:
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
         run: |
           mkdir -p ./artifact/package
-          echo "artifact-/bin" >> $LOG_PATH/cmzj_package.log
-          ls -l ./bin/** >> $LOG_PATH/cmzj_package.log
+          echo "artifact-/bin" >> $LOG_PATH/zlh_package.log
+          ls -l ./bin/** >> $LOG_PATH/zlh_package.log
           cp -rf $(find ./bin/targets/ -type f -name "*.ipk") ./artifact/package/
           rm -rf $(find ./bin/targets/ -type d -name "packages")
           cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
@@ -1021,8 +1021,8 @@ jobs:
         working-directory: ${{ env.OPENWRT_ROOT_PATH }}
         run: |
           mkdir -p ./artifact/{package,kmod,buildinfo}
-          echo "artifact-/bin" >> $LOG_PATH/cmzj_package.log
-          ls -l ./bin/** >> $LOG_PATH/cmzj_package.log
+          echo "artifact-/bin" >> $LOG_PATH/zlh_package.log
+          ls -l ./bin/** >> $LOG_PATH/zlh_package.log
           ls -l ./bin/targets/${{ matrix.target }}/${{ matrix.subtarget }}/** >> $LOG_PATH/Image_Builder-bin.log
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
           cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
@@ -1166,7 +1166,7 @@ jobs:
         working-directory: ${{ env.IMAGE_BUILDER_ROOT_PATH }}
         run: |
           mkdir -p ./artifact/buildinfo
-          echo "artifact-/bin" >> $LOG_PATH/cmzj_package.log
+          echo "artifact-/bin" >> $LOG_PATH/zlh_package.log
           ls -l ./bin/targets/${{ matrix.target }}/${{ matrix.subtarget }}/** >> $LOG_PATH/Image_Builder-bin.log
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
 
