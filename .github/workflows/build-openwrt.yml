@@ -683,7 +683,7 @@ jobs:
           sed -i -e "s/set system.@system\[-1].hostname='OpenWrt'/set system.@system\[-1].hostname='Zoulianghe'/g" -e "s/set system.@system\[-1].timezone='UTC'/set system.@system\[-1].timezone=\'$timezone\'/g" -e "/set system.@system\[-1].timezone='CST-8'/i\		set system.@system\[-1].zonename=\'$zonename\'" $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
           sed -i "s#^uci set network.lan.ipaddr=.*#uci set network.lan.ipaddr=\"$ipaddr\"#g"  $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
           sed -i '/DISTRIB_RELEASE/d' $OPENWRT_ROOT_PATH/files/etc/openwrt_release
-          echo "DISTRIB_REVISION=\'${{ needs.planning.outputs.starttime }}\'" >> $OPENWRT_ROOT_PATH/files/etc/openwrt_release
+          echo "DISTRIB_REVISION=\'R${{ needs.planning.outputs.starttime }}\'" >> $OPENWRT_ROOT_PATH/files/etc/openwrt_release
           
       - name: 检查剩余空间
         run: |
