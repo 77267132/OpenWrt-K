@@ -3,7 +3,7 @@ uci set network.lan.ipaddr="192.168.1.1"
 uci commit network
 /etc/init.d/network restart
 sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
-echo "DISTRIB_REVISION='R20240101" >> /etc/openwrt_release
+echo "DISTRIB_REVISION='R20240101'" >> /etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='OpenWrt R20240101 Compiled by Zoulianghe'" >> /etc/openwrt_release
 [ -d "/etc/init.d" ] && chmod +x /etc/init.d/*
