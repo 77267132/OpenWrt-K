@@ -692,7 +692,7 @@ jobs:
           sed -i "6s/R20240101/R${{ needs.planning.outputs.starttime }}/" $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
           echo "::notice ::设置openwrt发布号为R${{ needs.planning.outputs.starttime }}"
           sed -i "8s/OpenWrt R20240101/OpenWrt R${{ needs.planning.outputs.starttime }}/" $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
-          sed -i "8s/Compiled by Zoulianghe/Compiled by Zoulianghe $compiler/" $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
+          sed -i "8s/Compiled by Zoulianghe/Compiled by Zoulianghe ${compiler}/" $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
           echo "::notice ::设置openwrt固件版本为OpenWrt R${{ needs.planning.outputs.starttime }}"
           echo "::notice ::设置openwrt编译者为$compiler"
           
