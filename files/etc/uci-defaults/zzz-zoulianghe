@@ -4,8 +4,6 @@ uci commit network
 /etc/init.d/network restart
 sed -i '/DISTRIB_RELEASE/d' /etc/openwrt_release
 echo "DISTRIB_RELEASE=' '" >> /etc/openwrt_release
-sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
-echo "DISTRIB_REVISION='R20240105'" >> /etc/openwrt_release
 sed -i "/^DISTRIB_DESCRIPTION='/s/'$/ Compiled by Zoulianghe'/" /etc/openwrt_release
 [ -d "/etc/init.d" ] && chmod +x /etc/init.d/*
 [ -e "/usr/bin/AdGuardHome/AdGuardHome" ] && chmod 755 /usr/bin/AdGuardHome/AdGuardHome
