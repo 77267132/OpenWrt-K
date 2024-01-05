@@ -689,9 +689,9 @@ jobs:
           echo "::notice ::设置openwrt默认时区为$timezone"
           sed -i "/set system.@system\[-1].timezone='CST-8'/i set system.@system\[-1].zonename=\'$zonename\'" $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
           echo "::notice ::设置openwrt默认时区名称为$zonename"
-          sed -i '6s/R20240101/R${{ needs.planning.outputs.starttime }}/' $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
+          sed -i "6s/R20240101/R${{ needs.planning.outputs.starttime }}/" $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
           echo "::notice ::设置openwrt发布号为R${{ needs.planning.outputs.starttime }}"
-          sed -i '8s/OpenWrt R20240101 Compiled by Zoulianghe/OpenWrt R${{ needs.planning.outputs.starttime }} Compiled by ${{ compiler }}/' $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
+          sed -i "8s/OpenWrt R20240101 Compiled by Zoulianghe/OpenWrt R${{ needs.planning.outputs.starttime }} Compiled by \'$compiler\'/" $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
           echo "::notice ::设置openwrt固件版本为OpenWrt R${{ needs.planning.outputs.starttime }}"
           echo "::notice ::设置openwrt编译者为$compiler"
           
