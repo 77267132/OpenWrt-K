@@ -680,7 +680,7 @@ jobs:
           timezone=$(grep "^timezone=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/timezone=//" -e "s/ //g")
           zonename=$(grep "^zonename=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/zonename=//" -e "s/ //g")
           hostname=$(grep "^hostname=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/hostname=//" -e "s/ //g")
-          compilers=$(grep "^compiler=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/compiler=//" -e "s/ //g")
+          compilers=$(grep "^compilers=" $GITHUB_WORKSPACE/config/${{ matrix.config }}/OpenWrt-Z/openwrtext.config|sed -e "s/compilers=//" -e "s/ //g")
           sed -i "s#^uci set network.lan.ipaddr=.*#uci set network.lan.ipaddr=\"$ipaddr\"#g"  $OPENWRT_ROOT_PATH/files/etc/uci-defaults/zzz-zoulianghe
           echo "::notice ::设置openwrt默认ip为$ipaddr"
           sed -i "s/set system.@system\[-1].hostname='OpenWrt'/set system.@system\[-1].hostname=\'$hostname\'/g" $OPENWRT_ROOT_PATH/package/base-files/files/bin/config_generate
